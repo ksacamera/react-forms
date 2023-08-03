@@ -1,66 +1,58 @@
-import React, { useState } from 'react';
+import { useState } from "react";
+const API_URL = 'https://fsa-jwt-practice.herokuapp.com/signup'
 
 const SignUpForm = (props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  // const api url
-  
-  async function handleSubmit(event) {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("Hello 👋");
-
-    try {
-      const response = await fetch('https://fsa-jwt-practice.herokuapp.com/signup', {  
-      method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await response.json();
-      // console.log(data)
-      props.setToken(data.token);
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          setError('Invalid credentials. Please try again.');
-        } else {
-          setError('An error occurred. Please try again later.');
+  
+    try{
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          username, 
+          password
+        }),
+        headers : {
+          "Content-Type":"application/json"
         }
-      } else {
-        setError(null);
-      }
-      
-    } catch (error) {
-      setError(error.message || 'An error occurred. Please try again later.');
+      });
+      const data = await response.json();
+      props.setToken(data.token);
     }
-  }
+    catch(err){
+      setError(err.message);
+    }
 
+  }
 
   return (
     <>
       <h2>Sign Up</h2>
-      {error && <p>{error}</p>}
+
+      {error && <p>Error: {error}</p> }
+
       <form onSubmit={handleSubmit}>
         <label>
-          Username: {""}
+          Username:
           <input
             type="text"
             value={username}
             onChange={(event) => setUsername(event.target.value)}
-            />
+          />
         </label>
         <label>
-          Password: {""}
+          Password:
           <input
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
         </label>
-        <button type="submit">Submit</button>
+        <button>Submit</button>
       </form>
     </>
   );
